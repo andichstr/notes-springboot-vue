@@ -20,11 +20,6 @@
                 <b-form-group id="description-group" label="Description: " label-for="description">
                     <b-form-textarea id="description" v-model="form.desc" required/>
                 </b-form-group>
-                <div>
-                    <label for="categories">Categories: </label>
-                    <b-form-tags input-id="categories" tag-variant="primary" tag-pills v-model="form.categories" separator=" " size="sm" placeholder="Add category..."></b-form-tags>
-                    <p class="mt2"></p>
-                </div>
             </b-form>
             <div slot="modal-footer">
                 <button type="button" class="btn btn-secondary" @click="closeModal()">Cancel</button>
@@ -52,7 +47,6 @@ export default {
                 id: this.note.id,
                 title: this.note.title,
                 desc: this.note.description,
-                categories: this.note.categories,
             }
         }
     },

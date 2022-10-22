@@ -5,8 +5,8 @@
             <router-link to="/notes">Go back to unarchived notes</router-link>
         </div>
         <div class="wrapper">
-            <div v-for="note in notes" :key="note.id">
-                <Note :note="note" v-if="note.archived"/>
+            <div v-for="note in archivedNotes" :key="note.id">
+                <Note :note="note"/>
             </div>
         </div>
     </div>
@@ -19,8 +19,8 @@
         name: "ArchivedNotesView",
         components: { Note },
         computed: {
-            ...mapState("note", ["notes"]),
-            ...mapGetters("note", ["getNotes"]),
+            ...mapState("note", ["archivedNotes"]),
+            ...mapGetters("note", ["getArchivedNotes"]),
         },
         methods: {
             ...mapActions("note", ["getNotesFromAPI"]),

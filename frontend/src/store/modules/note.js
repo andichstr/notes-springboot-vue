@@ -5,25 +5,48 @@ export default {
     namespaced: true,
     state: {
         notes: [],
+        archivedNotes: [],
     },
     getters: {
         getNotes(state) {
             return state.notes;
         },
+        getArchivedNotes(state) {
+            return state.archivedNotes;
+        }
     },
     mutations: {
         setNotes(state, data) {
-            state.notes = data;
+            state.notes = [];
+            state.archivedNotes = [];
+            data.forEach(element => {
+                if(element.archived){
+                    state.archivedNotes.push(element);
+                }else{
+                    state.notes.push(element);
+                }
+            });
         },
         //data format: {i: Number, note: Object}
         setNote(state, data){
-            state.notes[data.i] = data.note;
+            if(data.archived){
+                state.archivedNotes[data.i] = data.note;
+            } else {
+                state.notes[data.i] = data.note;
+            }
         },
         deleteNote(state, i){
             state.notes.splice(i,1);
         },
+        deleteArchivedNote(state, i){
+            state.archivedNotes.splice(i,1);
+        },
         addNote(state, data) {
-            state.notes.push(data);
+            if(data.archived){
+                state.archivedNotes.push(data)
+            } else {
+                state.notes.push(data)
+            }
         },
     },
     actions: {
