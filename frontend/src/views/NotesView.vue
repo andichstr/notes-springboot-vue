@@ -25,6 +25,9 @@
                 <button type="button" class="btn btn-primary" @click="addNote(form)">OK</button>
             </div>
         </b-modal>
+        <b-modal id="modalConfirmNote" ref="modalConfirmNote" ok-only>
+            <h3>Note added succesfully</h3>
+        </b-modal>
     </div>
 </template>
   
@@ -51,10 +54,16 @@
             closeModal(){
                 this.$refs['modalAddNote'].hide();
             },
-            addNote(note){
-                this.addNoteToAPI(note);
-                this.getNotesFromAPI();
-                this.closeModal();
+            async addNote(note){
+                await this.addNoteToAPI(note)
+                .then(response => {
+                    this.getNotesFromAPI();
+                    this.closeModal();
+                    this.openConfirmModal();
+                })
+            },
+            openConfirmModal(){
+                this.$refs['modalConfirmNote'].show();
             },
         },
         mounted() {

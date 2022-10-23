@@ -65,16 +65,18 @@ export default {
         }
     },
     methods: {
-        archiveNote(note){
+        async archiveNote(note){
             note.archived = !note.archived;
-            this.editNoteToAPI(note);
-            this.getNotesFromAPI();
-            if(note.archived){
-                this.confirmMsg = "Note archived succesfully"
-            } else {
-                this.confirmMsg = "Note restored succesfully"
-            }
-            this.$refs['modalConfirm'].show();
+            await this.editNoteToAPI(note)
+            .then(response => {
+                this.getNotesFromAPI();
+                if(note.archived){
+                    this.confirmMsg = "Note archived succesfully"
+                } else {
+                    this.confirmMsg = "Note restored succesfully"
+                }
+                this.$refs['modalConfirm'].show();
+            })
         },
         openModal(){
             this.$refs['modalEditNote'].show();
@@ -82,12 +84,15 @@ export default {
         closeModal(){
             this.$refs['modalEditNote'].hide();
         },
-        editNote(note){
-            this.editNoteToAPI(note);
-            this.getNotesFromAPI();
-            this.closeModal();
-            this.confirmMsg = "Note edited succesfully"
-            this.$refs['modalConfirm'].show();
+        async editNote(note){
+            await this.editNoteToAPI(note)
+            .then(response => {
+                this.getNotesFromAPI();
+                this.closeModal();
+                this.confirmMsg = "Note edited succesfully"
+                this.$refs['modalConfirm'].show();
+            })
+            
         },
         confirmDelete(){
             this.$refs['modalDelete'].show();
@@ -95,11 +100,13 @@ export default {
         closeModalDelete(){
             this.$refs['modalDelete'].hide();
         },
-        deleteNote(note){
-            this.deleteNoteToAPI(note.id);
-            this.getNotesFromAPI();
-            this.confirmMsg = "Note succesfully deleted"
-            this.$refs['modalConfirm'].show();
+        async deleteNote(note){
+            await this.deleteNoteToAPI(note.id)
+            .then(response => {
+                this.getNotesFromAPI();
+                this.confirmMsg = "Note succesfully deleted"
+                this.$refs['modalConfirm'].show();
+            })
         },
         ...mapActions("note", ["getNotesFromAPI", "editNoteToAPI", "deleteNoteToAPI"]),
     },
