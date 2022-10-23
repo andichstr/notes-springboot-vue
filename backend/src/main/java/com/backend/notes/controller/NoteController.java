@@ -39,9 +39,9 @@ public class NoteController {
     public void addNote(@RequestBody Note note){
         service.saveNote(note);
     }
-    @PutMapping(value="/api/notes")
-    public void editNote(@RequestBody Note note){
-        service.saveNote(note);
+    @PutMapping(value="/api/notes/{id}")
+    public void editNote(@RequestBody Note note, @PathVariable("id") Long id){
+        service.editNoteById(id, note);
     }
 
     @DeleteMapping(value="/api/notes/{id}")

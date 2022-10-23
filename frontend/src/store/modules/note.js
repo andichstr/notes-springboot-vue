@@ -78,6 +78,31 @@ export default {
                 commit('addNote', data);
             }
         },
+        async switchArchivedToAPI({ commit, state }, note){
+            if(note.archived){
+                for(let i = 0; i < state.notes; i++){
+                    if (state.notes[i].id == note.id){
+                        commit('deleteNote', i)
+                    }
+                }
+            } else {
+                for(let i = 0; i < state.archivedNotes; i++){
+                    if (state.archivedNotes[i].id == note.id){
+                        commit('deleteArchivedNote', i)
+                    }
+                }
+            }
+            commit('addNote', note);
+            let result = null;
+            result = await axios.put(`${apiURL}/notes/${note.id}`, note)
+            .then(response => {
+                let result = response.data;
+                return result;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        },
         async editNoteToAPI({ commit, state }, note){
             let result = null;
             result = await axios.put(`${apiURL}/notes/${note.id}`, note)
@@ -113,7 +138,11 @@ export default {
             if (result != null) {
                 for(let i = 0; i < state.notes.length; i++) {
                     if (state.notes[i].id == id){
-                        commit('deleteNote', i);
+                        if (state.notes[i].archived){
+                            commit('deleteArchivedNote', i);
+                        }else{
+                            commit('deleteNote', i);
+                        }
                     }
                 }
             }

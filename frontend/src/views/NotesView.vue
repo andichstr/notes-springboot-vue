@@ -17,7 +17,7 @@
                     <b-form-input id="title" v-model="form.title" type="text" required/>
                 </b-form-group>
                 <b-form-group id="description-group" label="Description: " label-for="description">
-                    <b-form-textarea id="description" v-model="form.desc" required/>
+                    <b-form-textarea id="description" v-model="form.description" required/>
                 </b-form-group>
             </b-form>
             <div slot="modal-footer">
@@ -37,7 +37,7 @@
             return {
                 form: {
                     title: "",
-                    desc: "",
+                    description: "",
                 },
             }
         },

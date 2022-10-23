@@ -1,5 +1,6 @@
 package com.backend.notes.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,16 @@ public class NoteService {
         } else {
             throw new NoteNotFoundException("Note with Id: " + id + " Not Found");
         }
+    }
+
+    public void editNoteById(Long id, Note note){
+        Note updateNote = getNoteById(id);
+        Date date = new Date();
+        updateNote.setTitle(note.getTitle());
+        updateNote.setDescription(note.getDescription());
+        updateNote.setDate(date);
+        updateNote.setArchived(note.isArchived());
+        repo.save(updateNote);
     }
 
     public void deleteNoteById(Long id){

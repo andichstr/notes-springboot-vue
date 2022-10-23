@@ -18,13 +18,16 @@
                     <b-form-input id="title" v-model="form.title" type="text" required/>
                 </b-form-group>
                 <b-form-group id="description-group" label="Description: " label-for="description">
-                    <b-form-textarea id="description" v-model="form.desc" required/>
+                    <b-form-textarea id="description" v-model="form.description" required/>
                 </b-form-group>
             </b-form>
             <div slot="modal-footer">
                 <button type="button" class="btn btn-secondary" @click="closeModal()">Cancel</button>
                 <button type="button" class="btn btn-primary" @click="editNote(form)">OK</button>
             </div>
+        </b-modal>
+        <b-modal id="modalConfirm" ref="modalConfirm">
+            <h1>{{confirmMsg}}</h1>
         </b-modal>
     </div>
     
@@ -46,15 +49,23 @@ export default {
             form: {
                 id: this.note.id,
                 title: this.note.title,
-                desc: this.note.description,
-            }
+                description: this.note.description,
+                date: this.note.date,
+            },
+            confirmMsg: "",
         }
     },
     methods: {
         archiveNote(note){
-            note.archived = true;
+            note.archived = !note.archived;
             this.editNoteToAPI(note);
             this.getNotesFromAPI();
+            if(note.archived){
+                this.confirmMsg = "Nota archivada satisfactoriamente"
+            } else {
+                this.confirmMsg = "Nota desarchivada satisfactoriamente"
+            }
+            this.$refs['modalConfirm'].show();
         },
         openModal(){
             this.$refs['modalEditNote'].show();
@@ -63,12 +74,16 @@ export default {
             this.$refs['modalEditNote'].hide();
         },
         editNote(note){
-            console.log(note);
             this.editNoteToAPI(note);
+            this.getNotesFromAPI();
+            this.confirmMsg = "Nota editada satisfactoriamente"
+            this.$refs['modalConfirm'].show();
         },
         deleteNote(note){
             this.deleteNoteToAPI(note.id);
             this.getNotesFromAPI();
+            this.confirmMsg = "Nota eliminada satisfactoriamente"
+            this.$refs['modalConfirm'].show();
         },
         ...mapActions("note", ["getNotesFromAPI", "editNoteToAPI", "deleteNoteToAPI"]),
     },
