@@ -4,7 +4,7 @@
             <div class="right">
                 <h3>{{note.title}}</h3>
                 <h5>Last edited</h5>
-                <h6>{{note.date.slice(0,10)}}</h6>
+                <h6>{{note.date}}</h6>
             </div>
             <div class="left">
                 <b-icon class="icon" @click="archiveNote(note)" icon="archive-fill" scale="2"></b-icon>
@@ -101,11 +101,10 @@ export default {
             this.$refs['modalDelete'].hide();
         },
         async deleteNote(note){
+            this.closeModalDelete();
             await this.deleteNoteToAPI(note.id)
             .then(response => {
                 this.getNotesFromAPI();
-                this.confirmMsg = "Note succesfully deleted"
-                this.$refs['modalConfirm'].show();
             })
         },
         ...mapActions("note", ["getNotesFromAPI", "editNoteToAPI", "deleteNoteToAPI"]),
