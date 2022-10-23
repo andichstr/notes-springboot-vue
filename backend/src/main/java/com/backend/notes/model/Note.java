@@ -46,4 +46,11 @@ public class Note {
         categories.remove(category);
         category.getNotes().remove(this);
     }
+
+    public void removeAllCategories(){
+        for (Category category : categories) {
+            category.getNotes().remove(this);
+        }
+        categories.clear();
+    }
 }

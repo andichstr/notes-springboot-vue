@@ -3,11 +3,13 @@ package com.backend.notes.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.backend.notes.exception.NoteNotFoundException;
+import com.backend.notes.model.Category;
 import com.backend.notes.model.Note;
 import com.backend.notes.repository.NoteRepository;
 
@@ -41,6 +43,8 @@ public class NoteService {
         updateNote.setDescription(note.getDescription());
         updateNote.setDate(date);
         updateNote.setArchived(note.isArchived());
+        updateNote.removeAllCategories();
+        updateNote.setCategories(note.getCategories());
         repo.save(updateNote);
     }
 

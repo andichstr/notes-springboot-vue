@@ -21,6 +21,16 @@
                 <b-form-group id="description-group" label="Description: " label-for="description">
                     <b-form-textarea id="description" v-model="form.description" required/>
                 </b-form-group>
+                <b-form-group id="category-group" label="Categories: " label-for="category">
+                    <p v-if="form.categories.length==0">There are no categories in this note</p>
+                    <ul id="categories">
+                        <li v-for="(category, index) in form.categories" :key="index">{{category.name}} <b-icon class="removeCatBtn" icon="x" @click="removeCategory(index)"></b-icon></li>
+                    </ul>
+                </b-form-group>
+                <b-form-group id="addCategory-group" label="New category: " label-for="addCategory">
+                    <b-form-input type="text" id="addCategory" v-model="newCategory"/>
+                    <b-button variant="outline-primary" @click="addCategory(newCategory)">Add</b-button>
+                </b-form-group>
             </b-form>
             <div slot="modal-footer">
                 <button type="button" class="btn btn-secondary" @click="closeModal()">Cancel</button>
@@ -29,6 +39,10 @@
         </b-modal>
         <b-modal id="modalConfirm" ref="modalConfirm">
             <h3>{{confirmMsg}}</h3>
+            <div slot="modal-footer">
+                <button type="button" class="btn btn-secondary" @click="closeModalConfirm()">Cancel</button>
+                <button type="button" class="btn btn-primary" @click="getNotesFromAPI()">OK</button>
+            </div>
         </b-modal>
         <b-modal id="modalDelete" ref="modalDelete">
             <h3>Are you sure you want to delete this note?</h3>
@@ -60,8 +74,10 @@ export default {
                 description: this.note.description,
                 date: this.note.date,
                 archived: this.note.archived,
+                categories: this.note.categories,
             },
             confirmMsg: "",
+            newCategory: "",
         }
     },
     methods: {
@@ -69,7 +85,6 @@ export default {
             note.archived = !note.archived;
             await this.editNoteToAPI(note)
             .then(response => {
-                this.getNotesFromAPI();
                 if(note.archived){
                     this.confirmMsg = "Note archived succesfully"
                 } else {
@@ -84,9 +99,19 @@ export default {
         closeModal(){
             this.$refs['modalEditNote'].hide();
         },
+        async addNoteCategory(categories){
+            let categoriesToAdd = []
+            categories.forEach(element => {
+                categoriesToAdd.push({'name': element.name});
+            });
+            return categoriesToAdd;
+        },
         async editNote(note){
-            await this.editNoteToAPI(note)
+            await this.addNoteCategory(note.categories)
             .then(response => {
+                note.categories = response;
+                console.log(note);
+                this.editNoteToAPI(note);
                 this.getNotesFromAPI();
                 this.closeModal();
                 this.confirmMsg = "Note edited succesfully"
@@ -100,6 +125,9 @@ export default {
         closeModalDelete(){
             this.$refs['modalDelete'].hide();
         },
+        closeModalConfirm(){
+            this.$refs['modalConfirm'].hide();
+        },
         async deleteNote(note){
             this.closeModalDelete();
             await this.deleteNoteToAPI(note.id)
@@ -107,11 +135,26 @@ export default {
                 this.getNotesFromAPI();
             })
         },
+        addCategory(category){
+            let categoryToAdd = {'name': category};
+            let found = false;
+            this.form.categories.forEach(element => {
+                if(categoryToAdd.name===element.name) found = true
+            });
+            if (!found) this.form.categories.push(categoryToAdd);
+            this.newCategory = "";
+        },
+        removeCategory(i){
+            this.form.categories.splice(i,1);
+        },
         ...mapActions("note", ["getNotesFromAPI", "editNoteToAPI", "deleteNoteToAPI"]),
+        ...mapActions("category", ["addCategoryToAPI"]),
     },
     computed: {
             ...mapState("note", ["notes"]),
             ...mapGetters("note", ["getNotes"]),
+            ...mapState("category", ["categories"]),
+            ...mapGetters("category",["getCategories"]),
     },
 }
 </script>

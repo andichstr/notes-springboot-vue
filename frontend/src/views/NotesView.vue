@@ -19,6 +19,16 @@
                 <b-form-group id="description-group" label="Description: " label-for="description">
                     <b-form-textarea id="description" v-model="form.description" required/>
                 </b-form-group>
+                <b-form-group id="category-group" label="Categories: " label-for="category">
+                    <p v-if="form.categories.length==0">There are no categories in this note</p>
+                    <ul id="categories">
+                        <li v-for="(category, index) in form.categories" :key="index">{{category}} <b-icon class="removeCatBtn" icon="x" @click="removeCategory(index)"></b-icon></li>
+                    </ul>
+                </b-form-group>
+                <b-form-group id="addCategory-group" label="New category: " label-for="addCategory">
+                    <b-form-input type="text" id="addCategory" v-model="newCategory"/>
+                    <b-button variant="outline-primary" @click="addCategory(newCategory)">Add</b-button>
+                </b-form-group>
             </b-form>
             <div slot="modal-footer">
                 <button type="button" class="btn btn-secondary" @click="closeModal()">Cancel</button>
@@ -41,33 +51,57 @@
                 form: {
                     title: "",
                     description: "",
+                    categories: [],
                 },
+                newCategory: "",
             }
         },
         components: { Note },
         computed: {
             ...mapState("note", ["notes"]),
             ...mapGetters("note", ["getNotes"]),
+            ...mapState("category", ["categories"]),
         },
         methods: {
             ...mapActions("note", ["getNotesFromAPI", "addNoteToAPI"]),
+            ...mapActions("category", ["getCategoriesFromAPI", "addCategoriesToAPI"]),
             closeModal(){
                 this.$refs['modalAddNote'].hide();
             },
+            async addNoteCategory(categories){
+                let categoriesToAdd = [];
+                categories.forEach(element => {
+                    categoriesToAdd.push({'name': element});
+                });
+                return categoriesToAdd;
+            },
             async addNote(note){
-                await this.addNoteToAPI(note)
+                await this.addNoteCategory(note.categories)
                 .then(response => {
-                    this.getNotesFromAPI();
+                    console.log(response);
+                    note.categories = response;
+                    this.addNoteToAPI(note);
                     this.closeModal();
                     this.openConfirmModal();
+                    this.getNotesFromAPI();
                 })
             },
             openConfirmModal(){
                 this.$refs['modalConfirmNote'].show();
             },
+            addCategory(category){
+                if(!this.form.categories.includes(category)){
+                    this.form.categories.push(category);
+                }
+                this.newCategory = "";
+            },
+            removeCategory(i){
+                this.form.categories.splice(i,1);
+            }
         },
         mounted() {
             this.getNotesFromAPI();
+            this.getCategoriesFromAPI();
         },
     }
 </script>
@@ -84,5 +118,8 @@
     }
     .addNoteBtn{
         margin-right: 5px;
+    }
+    .removeCatBtn{
+        cursor: pointer;
     }
 </style>

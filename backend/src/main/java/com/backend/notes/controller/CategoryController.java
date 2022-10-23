@@ -35,13 +35,18 @@ public class CategoryController {
         return service.getCategoryById(id);
     }
     
-    @PostMapping(value="/api/categories/{id}")
-    public void addCategory(@RequestBody Category category){
-        service.saveCategory(category);
+    @PostMapping(value="/api/categories/")
+    public void addCategory(@RequestBody List<Category> categories){
+        for (Category category : categories) {
+            service.saveCategory(category);
+        }
     }
 
-    @DeleteMapping(value="/api/categories/{id}")
-    public void deleteCategory(@PathVariable("id") Long id){
-        service.deleteCategoryById(id);
+
+    @DeleteMapping(value="/api/categories/")
+    public void deleteCategory(@RequestBody List<Long> ids){
+        for (Long id : ids) {
+            service.deleteCategoryById(id);
+        }
     }
 }

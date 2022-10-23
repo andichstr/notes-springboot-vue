@@ -22,8 +22,10 @@ export default {
         deleteCategory(state, i){
             state.categories.splice(i,1);
         },
-        addCategory(state, data) {
-            state.categories.push(data);
+        addCategories(state, data) {
+            data.forEach(element => {
+                state.categories.push(element.name);
+            });
         },
     },
     actions: {
@@ -41,7 +43,7 @@ export default {
                 commit('setCategories', result);
             }
         },
-        async addCategoryToAPI({ commit }, data) {
+        async addCategoriesToAPI({ commit }, data) {
             let result = null;
             result = await axios.post(`${apiURL}/categories`, data)
             .then(response => {
@@ -52,7 +54,7 @@ export default {
                 console.error(error);
             });
             if (result != null) {
-                commit('addCategory', data);
+                commit('addCategories', data);
             }
         },
         async editCategoryToAPI({ commit, state }, category){
@@ -77,9 +79,9 @@ export default {
                 }
             }
         },
-        async deleteCategory({ commit, state }, id) {
+        async deleteCategorys({ commit, state }, ids) {
             let result = null;
-            result = await axios.delete(process.env.VUE_APP_API_URL + '/categories/' + id)
+            result = await axios.delete(process.env.VUE_APP_API_URL + '/categories/', ids)
             .then(response => {
                 let result = response.data;
                 return result;
@@ -88,11 +90,14 @@ export default {
                 console.error(error);
             });
             if (result != null) {
-                for(let i = 0; i < state.categories.length; i++) {
-                    if (state.categories[i].id == id){
-                        commit('deleteCategory', i);
+                ids.forEach(id => {
+                    for(let i = 0; i < state.categories.length; i++) {
+                        if (state.categories[i].id == id){
+                            commit('deleteCategory', i);
+                        }
                     }
-                }
+                });
+                
             }
         },
     }
