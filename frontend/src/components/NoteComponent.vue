@@ -2,13 +2,14 @@
     <div>
         <div class="wrapper">
             <div class="right">
-                <h2>{{note.title}}</h2>
-                <h4>{{note.date}}</h4>
+                <h3>{{note.title}}</h3>
+                <h5>Last edited</h5>
+                <h6>{{note.date.slice(0,10)}}</h6>
             </div>
             <div class="left">
                 <b-icon class="icon" @click="archiveNote(note)" icon="archive-fill" scale="2"></b-icon>
                 <b-icon class="icon" @click="openModal()" icon="pencil-fill" scale="2"></b-icon>
-                <b-icon class="icon" @click="deleteNote(note)" icon="trash-fill" scale="2"></b-icon>
+                <b-icon class="icon" @click="confirmDelete()" icon="trash-fill" scale="2"></b-icon>
             </div>
         </div>
         <b-modal id="modalEditNote" ref="modalEditNote">
@@ -27,7 +28,14 @@
             </div>
         </b-modal>
         <b-modal id="modalConfirm" ref="modalConfirm">
-            <h1>{{confirmMsg}}</h1>
+            <h3>{{confirmMsg}}</h3>
+        </b-modal>
+        <b-modal id="modalDelete" ref="modalDelete">
+            <h3>Are you sure you want to delete this note?</h3>
+            <div slot="modal-footer">
+                <button type="button" class="btn btn-secondary" @click="closeModalDelete()">Cancel</button>
+                <button type="button" class="btn btn-primary" @click="deleteNote(form)">OK</button>
+            </div>
         </b-modal>
     </div>
     
@@ -51,6 +59,7 @@ export default {
                 title: this.note.title,
                 description: this.note.description,
                 date: this.note.date,
+                archived: this.note.archived,
             },
             confirmMsg: "",
         }
@@ -61,9 +70,9 @@ export default {
             this.editNoteToAPI(note);
             this.getNotesFromAPI();
             if(note.archived){
-                this.confirmMsg = "Nota archivada satisfactoriamente"
+                this.confirmMsg = "Note archived succesfully"
             } else {
-                this.confirmMsg = "Nota desarchivada satisfactoriamente"
+                this.confirmMsg = "Note restored succesfully"
             }
             this.$refs['modalConfirm'].show();
         },
@@ -76,13 +85,20 @@ export default {
         editNote(note){
             this.editNoteToAPI(note);
             this.getNotesFromAPI();
-            this.confirmMsg = "Nota editada satisfactoriamente"
+            this.closeModal();
+            this.confirmMsg = "Note edited succesfully"
             this.$refs['modalConfirm'].show();
+        },
+        confirmDelete(){
+            this.$refs['modalDelete'].show();
+        },
+        closeModalDelete(){
+            this.$refs['modalDelete'].hide();
         },
         deleteNote(note){
             this.deleteNoteToAPI(note.id);
             this.getNotesFromAPI();
-            this.confirmMsg = "Nota eliminada satisfactoriamente"
+            this.confirmMsg = "Note succesfully deleted"
             this.$refs['modalConfirm'].show();
         },
         ...mapActions("note", ["getNotesFromAPI", "editNoteToAPI", "deleteNoteToAPI"]),

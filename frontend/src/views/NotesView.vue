@@ -2,7 +2,7 @@
     <div class="container">
         <div class="titleDiv">
             <h1>My notes</h1>
-            <b-button v-b-modal.modalAddNote>Add Note</b-button>
+            <b-button v-b-modal.modalAddNote class="addNoteBtn">Add Note</b-button>
             <router-link to="/notes/archived">Archived notes</router-link>
         </div>
         <div class="wrapper">
@@ -72,5 +72,8 @@
         grid-template-columns: repeat(3, 1fr);
         grid-gap: 10px;
         grid-auto-rows: minmax(100px, auto);
+    }
+    .addNoteBtn{
+        margin-right: 5px;
     }
 </style>

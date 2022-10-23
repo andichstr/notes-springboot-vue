@@ -2,7 +2,7 @@
     <div class="container">
         <div class="titleDiv">
             <h1>Archived notes</h1>
-            <router-link to="/notes">Go back to unarchived notes</router-link>
+            <router-link to="/notes">Go back to active notes</router-link>
         </div>
         <div class="wrapper">
             <div v-for="note in archivedNotes" :key="note.id">
@@ -37,5 +37,8 @@
         grid-template-columns: repeat(3, 1fr);
         grid-gap: 10px;
         grid-auto-rows: minmax(100px, auto);
+    }
+    .titleDiv{
+        text-align: left;
     }
 </style>
