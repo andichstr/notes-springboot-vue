@@ -64,7 +64,7 @@ export default {
         note: {
             type: Object,
             required: true,
-        }
+        },
     },
     data(){
         return {

@@ -1,11 +1,21 @@
 <template>
     <div class="container">
         <div class="titleDiv">
-            <h1>Archived notes</h1>
-            <router-link to="/notes">Go back to active notes</router-link>
+            <div>
+                <h1>My notes</h1>
+                <b-button v-b-modal.modalAddNote class="addNoteBtn">Add Note</b-button>
+                <router-link to="/notes/archived">Archived notes</router-link>
+            </div>
+            <div class="align-self-end">
+                <label for="selectCategory">Category filter: </label>
+                <select id="selectCategory" ref="selectCategory" v-model="selectedCategory">
+                    <option value="All">All</option>
+                    <option v-for="(category, index) in categories" :key="index" :value="category.name">{{category.name}}</option>
+                </select>
+            </div>
         </div>
         <div class="wrapper">
-            <div v-for="note in archivedNotes" :key="note.id">
+            <div v-for="note in selectedNotes" :key="note.id">
                 <Note :note="note"/>
             </div>
         </div>
@@ -17,10 +27,29 @@
     import { mapActions, mapGetters, mapState } from 'vuex';
     export default {
         name: "ArchivedNotesView",
+        data(){
+            return {
+                selectedCategory: "",
+            }
+        },
         components: { Note },
         computed: {
             ...mapState("note", ["archivedNotes"]),
             ...mapGetters("note", ["getArchivedNotes"]),
+            ...mapState("category", ["categories"]),
+            selectedNotes: function() {
+                if(this.selectedCategory=="All" || this.selectedCategory=="") return this.archivedNotes;
+                let arr = [];
+                let found = false;
+                this.archivedNotes.forEach(element => {
+                    element.categories.forEach(cat => {
+                        if(cat.name==this.selectedCategory) found = true;
+                    })
+                    if(found) arr.push(element);
+                    found = false;
+                });
+                return arr;
+            }
         },
         methods: {
             ...mapActions("note", ["getNotesFromAPI"]),
@@ -40,5 +69,9 @@
     }
     .titleDiv{
         text-align: left;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        grid-auto-rows: minmax(100px, auto)
     }
 </style>

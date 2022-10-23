@@ -1,12 +1,21 @@
 <template>
     <div class="container">
         <div class="titleDiv">
-            <h1>My notes</h1>
-            <b-button v-b-modal.modalAddNote class="addNoteBtn">Add Note</b-button>
-            <router-link to="/notes/archived">Archived notes</router-link>
+            <div>
+                <h1>My notes</h1>
+                <b-button v-b-modal.modalAddNote class="addNoteBtn">Add Note</b-button>
+                <router-link to="/notes/archived">Archived notes</router-link>
+            </div>
+            <div class="align-self-end">
+                <label for="selectCategory">Category filter: </label>
+                <select id="selectCategory" ref="selectCategory" v-model="selectedCategory">
+                    <option value="All">All</option>
+                    <option v-for="(category, index) in categories" :key="index" :value="category.name">{{category.name}}</option>
+                </select>
+            </div>
         </div>
         <div class="wrapper">
-            <div v-for="note in notes" :key="note.id">
+            <div v-for="note in selectedNotes" :key="note.id">
                 <Note :note="note"/>
             </div>
         </div>
@@ -54,6 +63,7 @@
                     categories: [],
                 },
                 newCategory: "",
+                selectedCategory: "",
             }
         },
         components: { Note },
@@ -61,6 +71,19 @@
             ...mapState("note", ["notes"]),
             ...mapGetters("note", ["getNotes"]),
             ...mapState("category", ["categories"]),
+            selectedNotes: function() {
+                if(this.selectedCategory=="All" || this.selectedCategory=="") return this.notes;
+                let arr = [];
+                let found = false;
+                this.notes.forEach(element => {
+                    element.categories.forEach(cat => {
+                        if(cat.name==this.selectedCategory) found = true;
+                    })
+                    if(found) arr.push(element);
+                    found = false;
+                });
+                return arr;
+            }
         },
         methods: {
             ...mapActions("note", ["getNotesFromAPI", "addNoteToAPI"]),
@@ -97,6 +120,14 @@
             },
             removeCategory(i){
                 this.form.categories.splice(i,1);
+            },
+            isSelected(note){
+                if (this.selectedCategory=="All" || this.selectedCategory=="") return true;
+                let selected = false;
+                note.categories.forEach(element => {
+                    if(element.name==this.selectedCategory) selected = true;
+                });
+                return selected
             }
         },
         mounted() {
@@ -109,11 +140,15 @@
 <style scoped>
     .titleDiv{
         text-align: left;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        grid-auto-rows: minmax(100px, auto)
     }
     .wrapper {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        grid-gap: 10px;
+        gap: 10px;
         grid-auto-rows: minmax(100px, auto);
     }
     .addNoteBtn{
