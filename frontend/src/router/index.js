@@ -13,7 +13,11 @@ const routes = [
     path: '/notes/archived',
     name: 'archived',
     component: () => import('../views/ArchivedNotesView.vue')
-  }
+  },
+  {
+    path: '/',
+    redirect: {name: 'notes'}
+  },
 ]
 
 const router = new VueRouter({

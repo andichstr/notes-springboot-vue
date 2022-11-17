@@ -101,7 +101,6 @@
             async addNote(note){
                 await this.addNoteCategory(note.categories)
                 .then(response => {
-                    console.log(response);
                     note.categories = response;
                     this.addNoteToAPI(note);
                     this.closeModal();

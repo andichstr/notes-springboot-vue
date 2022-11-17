@@ -110,7 +110,6 @@ export default {
             await this.addNoteCategory(note.categories)
             .then(response => {
                 note.categories = response;
-                console.log(note);
                 this.editNoteToAPI(note);
                 this.getNotesFromAPI();
                 this.closeModal();

@@ -4,7 +4,7 @@
             <div>
                 <h1>My notes</h1>
                 <b-button v-b-modal.modalAddNote class="addNoteBtn">Add Note</b-button>
-                <router-link to="/notes/archived">Archived notes</router-link>
+                <router-link to="/notes/">Active notes</router-link>
             </div>
             <div class="align-self-end">
                 <label for="selectCategory">Category filter: </label>
@@ -73,5 +73,8 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
         grid-auto-rows: minmax(100px, auto)
+    }
+    .addNoteBtn{
+        margin-right: 5px;
     }
 </style>
